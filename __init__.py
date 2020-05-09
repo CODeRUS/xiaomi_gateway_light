@@ -1,0 +1,1 @@
+"""Xiaomi Gateway Light integration."""

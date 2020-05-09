@@ -1,0 +1,8 @@
+{
+  "domain": "xiaomi_gateway_light",
+  "name": "Xiaomi Gateway Light",
+  "documentation": "https://github.com/coderus/xiaomi_gateway_light/",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": ["python-miio"]
+}
