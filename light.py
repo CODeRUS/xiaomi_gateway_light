@@ -179,17 +179,20 @@ class GatewayLight(Light):
 
             """ Use brightness or convert brightness_pct """
             end_level = int(brightness)
+            
+            if start_level == end_level:
+                return
 
             """ Calculate number of steps """
             steps = int(math.fabs((start_level - end_level)))
-            fadeout = True if start_level > end_level else False
+            fadeout = start_level > end_level
 
             """ Calculate the delay time """
             delay = round(transition / steps, 3)
 
-            """ Disable delay anbd increase stepping if delay < 3/4 second """
-            if (delay < .750):
-                delay = 0
+            """ increase delay and stepping if delay < 3/4 second """
+            if delay < .750:
+                delay *= 5
                 steps = int(steps / 5)
                 step_by = 5
             else:
@@ -201,20 +204,18 @@ class GatewayLight(Light):
 
             new_level = start_level
             for x in range(steps):
-                current_level = self._brightness
-                if (fadeout and current_level < new_level):
-                    break
-                elif (not fadeout and current_level > new_level):
-                    break
+                if fadeout:
+                    new_level = new_level - step_by
+                    if new_level < end_level:
+                        new_level = end_level
                 else:
-                    self.set_gateway_brightness(new_level)
-                    if (fadeout):
-                        new_level = new_level - step_by
-                    else:
-                        new_level = new_level + step_by
-                    """ Do not sleep for 0 delay """
-                    if (delay > 0):
-                        time.sleep(delay)
+                    new_level = new_level + step_by
+                    if new_level > end_level:
+                        new_level = end_level
+                self.set_gateway_brightness(new_level)
+                """ Do not sleep for 0 delay """
+                if delay:
+                    time.sleep(delay)
             if new_level != brightness:
                 self.set_gateway_brightness(brightness)
         else:
